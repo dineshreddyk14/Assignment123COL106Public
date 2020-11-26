@@ -22,14 +22,31 @@ public class A1DynamicMem extends DynamicMem {
 
     // In A1, you need to implement the Allocate and Free functions for the class A1DynamicMem
     // Test your memory allocator thoroughly using Doubly Linked lists only (A1List.java).
-    // While inserting into the list, only call insert at the head of the list
-    // Please note that ALL insertions in the DLL (used either in A1DynamicMem or used independently as the “dictionary” class implementation) are to be made at the HEAD (from the front).
-    // Also, the find-first should start searching from the head (irrespective of the use for A1DynamicMem). Similar arguments will follow with regards to the ROOT in the case of trees (specifying this in case it was not so trivial to anyone of you earlier)
+
     public int Allocate(int blockSize) {
-        return -1;
+        if (blockSize<=0) {
+            return -1;
+        }
+        Dictionary d = freeBlk.Find(blockSize,false);
+        if (d==null) {
+            return -1;
+        }
+        System.out.print(d.address);
+        if (d.size>blockSize) {
+            freeBlk.Insert(d.address+blockSize,d.size-blockSize,d.size-blockSize);
+        }
+        System.out.print(freeBlk.Delete(d));
+        allocBlk.Insert(d.address,blockSize,d.address);
+        return d.address;
     } 
-    // return 0 if successful, -1 otherwise
+    
     public int Free(int startAddr) {
-        return -1;
+        Dictionary d = allocBlk.Find(startAddr,true);
+        if (d==null) {
+            return -1;
+        }
+        allocBlk.Delete(d);
+        freeBlk.Insert(d.address,d.size,d.size);
+        return 0;
     }
 }
